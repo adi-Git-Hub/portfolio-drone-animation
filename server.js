@@ -204,6 +204,10 @@ app.use((request, response) => {
   response.status(404).send("Page not found");
 });
 
-app.listen(port, () => {
-  console.log(`Portfolio running at http://localhost:${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Portfolio running at http://localhost:${port}`);
+  });
+}
+
+module.exports = { app, portfolio };

@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="en" data-theme="blue">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0d1527">
+    <meta
+      name="description"
+      content="The dynamic portfolio of Nikita Yende — Computer Science & Engineering, AI, IoT Robotics, and interactive web architectures."
+    >
+    <title>Nikita Yende — Dynamic 3D Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./drone-scene.js"></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    
+
+    <!-- Full-screen 3D Drone Viewport (Z-Index 2: Behind cards, revealed in open spaces!) -->
+    <div class="drone-viewport-stage" id="drone-scene" role="img" aria-label="Interactive 3D industrial quadcopter illuminated by your soft white cursor spotlight.">
+      <canvas class="drone-canvas" id="drone-canvas" aria-hidden="true"></canvas>
+      <div class="drone-fallback" aria-hidden="true">
+        <div class="fallback-radar"></div>
+        <p>3D ENGINE VIEW</p>
+      </div>
+    </div>
+
+    <!-- Soft Diffused White Cursor Spotlight Pool -->
+    <div class="cursor-white-spotlight" id="cursor-spotlight" aria-hidden="true"></div>
+
+    <!-- Fixed Header Navigation (Stays fixed while scrolling) -->
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="Nikita Yende, home">
+        <span class="brand__mark">N<span>.</span></span>
+        <span class="brand__name">Nikita Yende</span>
+        <span class="brand__badge">AI &amp; CSE</span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#stack">Tech Stack</a>
+        <a href="#research">Research</a>
+        <a href="#work">Projects</a>
+        <a href="#certifications">Certifications</a>
+        <a href="#journey">Journey</a>
+      </nav>
+      <div class="theme-picker theme-picker--header" role="group" aria-label="Choose an accent theme">
+        <span class="theme-picker__label">THEME</span>
+        <button class="theme-swatch" type="button" data-theme-choice="blue" aria-label="Cyber Cyan" aria-pressed="true"><span class="swatch-dot swatch-dot--blue"></span></button>
+        <button class="theme-swatch" type="button" data-theme-choice="purple" aria-label="Cosmic Violet" aria-pressed="false"><span class="swatch-dot swatch-dot--purple"></span></button>
+        <button class="theme-swatch" type="button" data-theme-choice="green" aria-label="Hyper Emerald" aria-pressed="false"><span class="swatch-dot swatch-dot--green"></span></button>
+        <button class="theme-swatch" type="button" data-theme-choice="red" aria-label="Solar Coral" aria-pressed="false"><span class="swatch-dot swatch-dot--red"></span></button>
+        <button class="theme-swatch" type="button" data-theme-choice="pink" aria-label="Neon Magenta" aria-pressed="false"><span class="swatch-dot swatch-dot--pink"></span></button>
+      </div>
+      <div class="header-actions">
+        <!-- View Resume Button (Opens Modal Viewer) -->
+        <button class="header-resume-link" id="btn-open-resume-header" type="button" title="View Nikita's Resume">
+          <span class="resume-icon">📄</span>
+          <span>Resume</span>
+          <span class="download-arrow" aria-hidden="true">👁</span>
+        </button>
+        <a class="contact-button" href="#contact">Open Channel <span aria-hidden="true">↗</span></a>
+        <!-- Mobile Navigation Menu Toggle (Only visible on mobile) -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Toggle mobile menu" aria-expanded="false">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mobile Navigation Drawer (Only displayed on mobile when toggled) -->
+    <div class="mobile-nav-drawer" id="mobile-nav-drawer" aria-hidden="true">
+      <div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>
+      <div class="mobile-nav-panel glass-panel">
+        <div class="mobile-nav-header">
+          <div class="brand">
+            <span class="brand__mark">N<span>.</span></span>
+            <span class="brand__name">Nikita Yende</span>
+          </div>
+          <button class="mobile-nav-close" id="mobile-nav-close" type="button" aria-label="Close navigation">✕</button>
+        </div>
+        <nav class="mobile-nav-links" aria-label="Mobile navigation">
+          <a class="mobile-nav-link" href="#home"><span class="m-nav-icon">✦</span> Overview</a>
+          <a class="mobile-nav-link" href="#stack"><span class="m-nav-icon">⚡</span> Tech Stack</a>
+          <a class="mobile-nav-link" href="#research"><span class="m-nav-icon">⚛</span> Research Paper</a>
+          <a class="mobile-nav-link" href="#work"><span class="m-nav-icon">⌘</span> Selected Projects</a>
+          <a class="mobile-nav-link" href="#certifications"><span class="m-nav-icon">★</span> Certifications</a>
+          <a class="mobile-nav-link" href="#journey"><span class="m-nav-icon">🎓</span> Journey &amp; Milestones</a>
+          <a class="mobile-nav-link mobile-nav-link--contact" href="#contact"><span class="m-nav-icon">✉</span> Contact Me</a>
+        </nav>
+        <div class="mobile-nav-footer">
+          <div class="mobile-theme-row">
+            <span class="mobile-theme-label">THEME ACCENT</span>
+            <div class="theme-picker theme-picker--mobile" role="group" aria-label="Choose an accent theme">
+              <button class="theme-swatch" type="button" data-theme-choice="blue" aria-label="Cyber Cyan"><span class="swatch-dot swatch-dot--blue"></span></button>
+              <button class="theme-swatch" type="button" data-theme-choice="purple" aria-label="Cosmic Violet"><span class="swatch-dot swatch-dot--purple"></span></button>
+              <button class="theme-swatch" type="button" data-theme-choice="green" aria-label="Hyper Emerald"><span class="swatch-dot swatch-dot--green"></span></button>
+              <button class="theme-swatch" type="button" data-theme-choice="red" aria-label="Solar Coral"><span class="swatch-dot swatch-dot--red"></span></button>
+              <button class="theme-swatch" type="button" data-theme-choice="pink" aria-label="Neon Magenta"><span class="swatch-dot swatch-dot--pink"></span></button>
+            </div>
+          </div>
+          <button class="button button--download button--full" id="btn-open-resume-mobile" type="button">
+            <span class="btn-icon">📄</span>
+            <span>View Official Resume (PDF)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <!-- Hero Section: Left content, Right dedicated open drone flight stage -->
+      <section class="hero section-shell" id="home">
+        <div class="hero__copy">
+          <div class="hero__profile-row">
+            <div class="hero__avatar-container" title="Nikita Yende — Computer Science &amp; Engineering | AI &amp; Data Science">
+              <div class="hero__avatar-ring-spin" aria-hidden="true"></div>
+              <div class="hero__avatar-frame">
+                <img src="./certificates/niki_pic.jpeg" alt="Nikita Yende" class="hero__avatar-img" />
+              </div>
+              <span class="hero__avatar-status-pill">
+                <span class="avatar-live-pulse" aria-hidden="true"></span>
+                <span>Active</span>
+              </span>
+            </div>
+            <div class="hero__title-block">
+              <div class="hero__pill">
+                <span class="status-dot"></span>
+                <span>AVAILABLE FOR OPPORTUNITIES</span>
+              </div>
+              <h1 class="hero__name">
+                <span class="gradient-text">Nikita Yende</span>
+              </h1>
+            </div>
+          </div>
+          <p class="hero__intro">
+            M.Tech Computer Science and Engineering student with a B.Tech background in Artificial Intelligence and Data Science Engineering. Experienced in developing responsive web applications, database-driven architectures, and IoT robotics research. Passionate about turning complex logic into intuitive digital experiences.
+          </p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="#work">
+              <span>View Projects</span>
+              <span class="btn-arrow" aria-hidden="true">→</span>
+            </a>
+            <!-- View Resume Modal Trigger Button in Hero -->
+            <button class="button button--download" id="btn-open-resume-hero" type="button">
+              <span class="btn-icon">📄</span>
+              <span>View Resume</span>
+              <span class="download-badge">PDF</span>
+            </button>
+            <a class="button button--glass" href="#stack">
+              <span>Tech Stack</span>
+              <span class="btn-icon" aria-hidden="true">⌘</span>
+            </a>
+          </div>
+          <div class="hero__meta">
+            <span class="meta-tag"><span class="meta-icon">⌁</span> M.Tech CSE &amp; B.Tech AI &amp; Data Science</span>
+            <span class="meta-tag"><span class="meta-icon">⌖</span> Nagpur, India</span>
+          </div>
+        </div>
+
+        <!-- Dedicated Open Stage for Drone in Hero -->
+        <div class="drone-open-stage hero-drone-stage" aria-hidden="true">
+          <div class="flight-grid-ring"></div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="hero-stats-banner">
+          
+            <div class="stat-pill">
+              <span class="stat-icon">⚡</span>
+              <div class="stat-info">
+                <span class="stat-number">02</span>
+                <span class="stat-label">Featured Projects</span>
+              </div>
+            </div>
+          
+            <div class="stat-pill">
+              <span class="stat-icon">⌘</span>
+              <div class="stat-info">
+                <span class="stat-number">16+</span>
+                <span class="stat-label">Tools &amp; Technologies</span>
+              </div>
+            </div>
+          
+            <div class="stat-pill">
+              <span class="stat-icon">⚛</span>
+              <div class="stat-info">
+                <span class="stat-number">01</span>
+                <span class="stat-label">Published IRJET Paper</span>
+              </div>
+            </div>
+          
+            <div class="stat-pill">
+              <span class="stat-icon">★</span>
+              <div class="stat-info">
+                <span class="stat-number">06</span>
+                <span class="stat-label">Specialized Certifications</span>
+              </div>
+            </div>
+          
+        </div>
+
+        <a class="scroll-cue" href="#stack" aria-label="Scroll to tech stack">
+          <span class="scroll-cue__mouse"><span class="scroll-cue__wheel"></span></span>
+        </a>
+      </section>
+
+      <!-- Tech Stack Section: 3D Stacking Deck on Scroll & Fixed Drone Stage -->
+      <section class="section-shell stack-section" id="stack">
+        <div class="section-heading section-heading--row">
+          <div>
+            <p class="eyebrow">TECHNICAL ARSENAL</p>
+            <h2>The <span class="gradient-text">Tech Stack Deck.</span></h2>
+          </div>
+        </div>
+
+        <div class="stack-layout-wrapper">
+          <!-- 3D Stacking Card Deck on the Left (~62% width) -->
+          <div class="stack-deck-container" id="stack-deck">
+            
+              <article
+                class="stack-deck-card glass-panel"
+                data-deck-index="0"
+                style="--deck-idx: 0; --deck-total: 4;"
+              >
+                <div class="deck-card__header">
+                  <div class="deck-card__title-row">
+                    <span class="deck-icon">⚡</span>
+                    <h3>Programming Languages</h3>
+                  </div>
+                  <span class="deck-badge">STACK LAYER 1 / 4</span>
+                </div>
+                <p class="deck-card__desc">Core compiled &amp; interpreted languages for algorithmic problem-solving and systems architecture.</p>
+
+                <!-- Clean Skill Token Pills (No percentages, No lines!) -->
+                <div class="deck-token-grid">
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">P</span>
+                        <h4 class="token-name">Python</h4>
+                      </div>
+                      <span class="token-tag">Primary Language</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">J</span>
+                        <h4 class="token-name">Java</h4>
+                      </div>
+                      <span class="token-tag">OOP &amp; Systems</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">C</span>
+                        <h4 class="token-name">C &amp; C++</h4>
+                      </div>
+                      <span class="token-tag">Algorithms &amp; Low-Level</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">J</span>
+                        <h4 class="token-name">JavaScript</h4>
+                      </div>
+                      <span class="token-tag">Modern ES6+ &amp; Three.js</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">S</span>
+                        <h4 class="token-name">SQL</h4>
+                      </div>
+                      <span class="token-tag">Relational Queries</span>
+                    </div>
+                  
+                </div>
+              </article>
+            
+              <article
+                class="stack-deck-card glass-panel"
+                data-deck-index="1"
+                style="--deck-idx: 1; --deck-total: 4;"
+              >
+                <div class="deck-card__header">
+                  <div class="deck-card__title-row">
+                    <span class="deck-icon">🌐</span>
+                    <h3>Web &amp; Frameworks</h3>
+                  </div>
+                  <span class="deck-badge">STACK LAYER 2 / 4</span>
+                </div>
+                <p class="deck-card__desc">Modern frontend &amp; backend frameworks for building responsive, high-performance web applications.</p>
+
+                <!-- Clean Skill Token Pills (No percentages, No lines!) -->
+                <div class="deck-token-grid">
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">H</span>
+                        <h4 class="token-name">HTML5 &amp; CSS3</h4>
+                      </div>
+                      <span class="token-tag">Responsive &amp; Modern UI</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">F</span>
+                        <h4 class="token-name">Flask</h4>
+                      </div>
+                      <span class="token-tag">Backend &amp; Web APIs</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">B</span>
+                        <h4 class="token-name">Bootstrap</h4>
+                      </div>
+                      <span class="token-tag">Grid Architecture</span>
+                    </div>
+                  
+                </div>
+              </article>
+            
+              <article
+                class="stack-deck-card glass-panel"
+                data-deck-index="2"
+                style="--deck-idx: 2; --deck-total: 4;"
+              >
+                <div class="deck-card__header">
+                  <div class="deck-card__title-row">
+                    <span class="deck-icon">📊</span>
+                    <h3>Data &amp; Database Systems</h3>
+                  </div>
+                  <span class="deck-badge">STACK LAYER 3 / 4</span>
+                </div>
+                <p class="deck-card__desc">Relational database engines, data analytics, automated reporting, and dynamic visualizations.</p>
+
+                <!-- Clean Skill Token Pills (No percentages, No lines!) -->
+                <div class="deck-token-grid">
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">S</span>
+                        <h4 class="token-name">SQLite</h4>
+                      </div>
+                      <span class="token-tag">Database Design</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">P</span>
+                        <h4 class="token-name">Pandas</h4>
+                      </div>
+                      <span class="token-tag">Data Analysis</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">O</span>
+                        <h4 class="token-name">OpenPyXL</h4>
+                      </div>
+                      <span class="token-tag">Automation &amp; Reports</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">C</span>
+                        <h4 class="token-name">Chart.js</h4>
+                      </div>
+                      <span class="token-tag">Data Visualization</span>
+                    </div>
+                  
+                </div>
+              </article>
+            
+              <article
+                class="stack-deck-card glass-panel"
+                data-deck-index="3"
+                style="--deck-idx: 3; --deck-total: 4;"
+              >
+                <div class="deck-card__header">
+                  <div class="deck-card__title-row">
+                    <span class="deck-icon">🛠️</span>
+                    <h3>Engineering Tools &amp; Platforms</h3>
+                  </div>
+                  <span class="deck-badge">STACK LAYER 4 / 4</span>
+                </div>
+                <p class="deck-card__desc">Version control, developer environments, algorithmic challenge platforms, and modeling tools.</p>
+
+                <!-- Clean Skill Token Pills (No percentages, No lines!) -->
+                <div class="deck-token-grid">
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">G</span>
+                        <h4 class="token-name">GitHub</h4>
+                      </div>
+                      <span class="token-tag">Version Control &amp; Git</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">V</span>
+                        <h4 class="token-name">VS Code</h4>
+                      </div>
+                      <span class="token-tag">Primary IDE</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">C</span>
+                        <h4 class="token-name">CodeChef</h4>
+                      </div>
+                      <span class="token-tag">Problem Solving</span>
+                    </div>
+                  
+                    <div class="skill-token-card">
+                      <div class="token-top">
+                        <span class="token-letter">M</span>
+                        <h4 class="token-name">Microsoft Excel</h4>
+                      </div>
+                      <span class="token-tag">Data Modeling</span>
+                    </div>
+                  
+                </div>
+              </article>
+            
+          </div>
+
+          <!-- Dedicated Fixed Observation Stage for Drone (Drone is FIXED here!) -->
+          <div class="drone-open-stage stack-drone-stage" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <!-- Featured Research Spotlight Section -->
+      <section class="section-shell research-section" id="research">
+        <div class="section-heading section-heading--row">
+          <div>
+            <p class="eyebrow">RESEARCH &amp; INNOVATION</p>
+            <h2>Published <span class="gradient-text">Research Paper.</span></h2>
+          </div>
+        </div>
+
+        <div class="research-hero-card glass-panel" data-tilt>
+          <div class="glass-shine"></div>
+          <div class="research-card__content">
+            <div class="research-badge-row">
+              <span class="research-pill research-pill--highlight">Published Research Paper</span>
+              <span class="research-pill">IRJET (International Research Journal of Engineering &amp; Technology)</span>
+              <span class="research-pill research-pill--contrast">Spark-2025 Presenter</span>
+            </div>
+            <h3>Intelligent IoT-Based Hand Gesture Controlled Robot</h3>
+            <p class="research-description">Engineered an IoT-enabled robotic vehicle controlled intuitively via hand gestures using accelerometer/gyroscope sensors and real-time microcontroller signal transmission for remote exploration and accessibility.</p>
+            <div class="research-meta-grid">
+              <div class="research-meta-item">
+                <span class="meta-label">ROBOTIC SUBSYSTEMS</span>
+                <span class="meta-val">Accelerometer &amp; Gyroscopic Telemetry</span>
+              </div>
+              <div class="research-meta-item">
+                <span class="meta-label">COMMUNICATION PIPELINE</span>
+                <span class="meta-val">IoT Wireless Microcontroller Transmission</span>
+              </div>
+              <div class="research-meta-item">
+                <span class="meta-label">APPLICATION IMPACT</span>
+                <span class="meta-val">Autonomous &amp; Tele-operated Robotic Control via Human Motion Recognition</span>
+              </div>
+            </div>
+            <ul class="tag-list">
+              
+                <li class="tag-chip tag-chip--glow">IoT Hardware</li>
+              
+                <li class="tag-chip tag-chip--glow">Gesture Control</li>
+              
+                <li class="tag-chip tag-chip--glow">Sensor Telemetry</li>
+              
+                <li class="tag-chip tag-chip--glow">Embedded Robotics</li>
+              
+                <li class="tag-chip tag-chip--glow">Wireless Pipeline</li>
+              
+            </ul>
+            <div class="research-action-row">
+              <button class="button button--primary button--view-cert" id="btn-view-research-cert" type="button"
+                data-cert-img="./certificates/niki_irjet.jpeg"
+                data-cert-title="Intelligent IoT-Based Hand Gesture Controlled Robot — Published Research Certificate"
+                data-cert-issuer="IRJET (International Research Journal of Engineering &amp; Technology) · Published Paper Credential"
+                data-cert-badge="Research Publication"
+                data-cert-code="IRJET-RP-2025"
+                title="View verified research certificate">
+                <span class="btn-icon">📜</span>
+                <span>View Research Certificate</span>
+                <span class="btn-arrow" aria-hidden="true">→</span>
+              </button>
+            </div>
+          </div>
+          <div class="research-card__visual">
+            <div class="gesture-visualizer" aria-hidden="true">
+              <div class="gesture-ring gesture-ring--outer"></div>
+              <div class="gesture-ring gesture-ring--inner"></div>
+              <div class="gesture-robot-icon">🤖</div>
+              <div class="gesture-wave wave-1"></div>
+              <div class="gesture-wave wave-2"></div>
+              <div class="gesture-wave wave-3"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Projects Section: Exactly 2 projects, displayed one by one in alternating layout -->
+      <!-- Project 1: Card on LEFT, Drone Space on RIGHT -->
+      <!-- Project 2: Drone Space on LEFT, Card on RIGHT -->
+      <section class="section-shell work-section" id="work">
+        <div class="section-heading section-heading--row">
+          <div>
+            <p class="eyebrow">FEATURED PROJECTS</p>
+            <h2>Selected <span class="gradient-text">Work.</span></h2>
+          </div>
+        </div>
+
+        <div class="project-alternating-container">
+          
+            
+            <div class="project-split-row project-split-row--card-left">
+              
+
+              <article class="project-card glass-panel" data-tilt>
+                <div class="project-card__visual">
+                  <div class="project-badge-strip">
+                    <span class="project-number">PROJECT 01</span>
+                    <span class="project-badge">Enterprise Tool</span>
+                  </div>
+                  
+                    <!-- Inventory Dashboard Mockup Visual -->
+                    <div class="inventory-ui" aria-hidden="true">
+                      <div class="inventory-ui__bar"><span></span><span></span><span></span></div>
+                      <div class="inventory-ui__title">SYSTEM ASSET AUDIT ENGINE</div>
+                      <div class="inventory-ui__stats">
+                        <div class="metric-pill"><span>TOTAL ASSETS</span><b>1,420</b></div>
+                        <div class="metric-pill"><span>ACTIVE</span><b>98.4%</b></div>
+                        <div class="metric-pill"><span>STATUS</span><b class="status-live">ONLINE</b></div>
+                      </div>
+                      <div class="inventory-ui__table">
+                        <i></i><i></i><i></i><i></i>
+                      </div>
+                    </div>
+                  
+                </div>
+
+                <div class="project-card__body">
+                  <p class="project-category">Full Stack · Flask &amp; SQL</p>
+                  <h3>Asset Inventory Management System</h3>
+                  <p class="project-description">A Flask-based web application developed for managing, tracking, and auditing IT assets. Built with SQLite to keep inventory information organized and enable quick multi-attribute lookups through an intuitive browser interface.</p>
+                  <div class="project-metrics">
+                    
+                      <span class="metric-chip">✓ Real-time Asset Tracking</span>
+                    
+                      <span class="metric-chip">✓ Audit Logs</span>
+                    
+                      <span class="metric-chip">✓ Responsive Dashboard</span>
+                    
+                  </div>
+                  <ul class="tag-list">
+                    
+                      <li class="tag-chip">Python</li>
+                    
+                      <li class="tag-chip">Flask</li>
+                    
+                      <li class="tag-chip">SQL</li>
+                    
+                      <li class="tag-chip">SQLite</li>
+                    
+                      <li class="tag-chip">HTML &amp; CSS</li>
+                    
+                      <li class="tag-chip">Chart.js</li>
+                    
+                  </ul>
+                </div>
+              </article>
+
+              
+                <!-- Drone Space on Right for Project 1 -->
+                <div class="drone-open-stage project-drone-stage" aria-hidden="true"></div>
+              
+            </div>
+          
+            
+            <div class="project-split-row project-split-row--card-right">
+              
+                <!-- Drone Space on Left for Project 2 -->
+                <div class="drone-open-stage project-drone-stage" aria-hidden="true"></div>
+              
+
+              <article class="project-card glass-panel" data-tilt>
+                <div class="project-card__visual">
+                  <div class="project-badge-strip">
+                    <span class="project-number">PROJECT 02</span>
+                    <span class="project-badge">Responsive Web</span>
+                  </div>
+                  
+                    <!-- Restaurant Showcase Visual -->
+                    <div class="restaurant-ui" aria-hidden="true">
+                      <span class="restaurant-ui__caption">THE GASTRONOMIC TABLE</span>
+                      <span class="restaurant-ui__plate"></span>
+                      <span class="restaurant-ui__spark">✳</span>
+                      <div class="restaurant-badges">
+                        <span>RESPONSIVE UI</span>
+                        <span>MODULAR CSS</span>
+                      </div>
+                    </div>
+                  
+                </div>
+
+                <div class="project-card__body">
+                  <p class="project-category">Responsive Frontend · Web Design</p>
+                  <h3>Restaurant Website</h3>
+                  <p class="project-description">A modern, responsive restaurant front-end website built with clean semantic HTML, modular CSS, and JavaScript. Focused on appealing visual hierarchy, fluid layouts, and seamless usability across mobile, tablet, and desktop viewports.</p>
+                  <div class="project-metrics">
+                    
+                      <span class="metric-chip">✓ Mobile-First Layout</span>
+                    
+                      <span class="metric-chip">✓ Dynamic Menu UI</span>
+                    
+                      <span class="metric-chip">✓ Smooth Interaction</span>
+                    
+                  </div>
+                  <ul class="tag-list">
+                    
+                      <li class="tag-chip">HTML5</li>
+                    
+                      <li class="tag-chip">CSS3</li>
+                    
+                      <li class="tag-chip">JavaScript</li>
+                    
+                      <li class="tag-chip">Responsive Design</li>
+                    
+                      <li class="tag-chip">UI/UX</li>
+                    
+                  </ul>
+                </div>
+              </article>
+
+              
+            </div>
+          
+        </div>
+      </section>
+
+      <!-- DEDICATED CERTIFICATIONS SECTION (Separate, Creative Card Grid) -->
+      <section class="section-shell cert-section" id="certifications">
+        <div class="section-heading section-heading--row">
+          <div>
+            <p class="eyebrow">CREDENTIALS &amp; ACCREDITATIONS</p>
+            <h2>Specialized <span class="gradient-text">Certifications.</span></h2>
+            <p class="cert-click-prompt"><span class="prompt-glow-dot" aria-hidden="true"></span> Click to see the certificates.</p>
+          </div>
+        </div>
+
+        <div class="certifications-standalone-grid">
+          
+          
+            
+            <article class="cert-credential-badge glass-panel" data-tilt role="button" tabindex="0"
+              data-cert-img="./certificates/niki_nptel_ml.jpeg"
+              data-cert-title="Introduction to Machine Learning"
+              data-cert-issuer="NPTEL · IIT Kharagpur"
+              data-cert-badge="IIT Certified"
+              data-cert-code="IITK-ML-984"
+              aria-label="View Introduction to Machine Learning certificate">
+              <div class="hologram-foil-layer"></div>
+              
+              <div class="badge-top-ribbon">
+                <div class="badge-serial">
+                  <span class="serial-prefix">CR //</span>
+                  <span class="serial-code">IITK-ML-984</span>
+                </div>
+                <span class="badge-accreditation-pill">IIT Certified</span>
+              </div>
+
+              <div class="badge-center-section">
+                <div class="hex-emblem-wrapper">
+                  <div class="hex-emblem">
+                    <span class="hex-symbol">ML</span>
+                  </div>
+                  <span class="hex-ambient-glow"></span>
+                </div>
+                <div class="badge-text-body">
+                  <h3 class="badge-title">Introduction to Machine Learning</h3>
+                  <p class="badge-issuer">
+                    <span class="issuer-icon">🧠</span>
+                    <span>NPTEL · IIT Kharagpur</span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="badge-security-footer">
+                <div class="security-chip">
+                  <span class="chip-dot"></span>
+                  <span class="chip-text">AUTHENTICATED RECORD</span>
+                </div>
+                <div class="cert-card-view-cue">
+                  <span class="cue-text">Click to see certificate</span>
+                  <span class="cue-icon" aria-hidden="true">↗</span>
+                </div>
+              </div>
+            </article>
+          
+            
+            <article class="cert-credential-badge glass-panel" data-tilt role="button" tabindex="0"
+              data-cert-img="./certificates/niki_nptel_dl.jpeg"
+              data-cert-title="Deep Learning"
+              data-cert-issuer="NPTEL · IIT Ropar"
+              data-cert-badge="IIT Certified"
+              data-cert-code="IITR-DL-412"
+              aria-label="View Deep Learning certificate">
+              <div class="hologram-foil-layer"></div>
+              
+              <div class="badge-top-ribbon">
+                <div class="badge-serial">
+                  <span class="serial-prefix">CR //</span>
+                  <span class="serial-code">IITR-DL-412</span>
+                </div>
+                <span class="badge-accreditation-pill">IIT Certified</span>
+              </div>
+
+              <div class="badge-center-section">
+                <div class="hex-emblem-wrapper">
+                  <div class="hex-emblem">
+                    <span class="hex-symbol">DL</span>
+                  </div>
+                  <span class="hex-ambient-glow"></span>
+                </div>
+                <div class="badge-text-body">
+                  <h3 class="badge-title">Deep Learning</h3>
+                  <p class="badge-issuer">
+                    <span class="issuer-icon">⚡</span>
+                    <span>NPTEL · IIT Ropar</span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="badge-security-footer">
+                <div class="security-chip">
+                  <span class="chip-dot"></span>
+                  <span class="chip-text">AUTHENTICATED RECORD</span>
+                </div>
+                <div class="cert-card-view-cue">
+                  <span class="cue-text">Click to see certificate</span>
+                  <span class="cue-icon" aria-hidden="true">↗</span>
+                </div>
+              </div>
+            </article>
+          
+            
+            <article class="cert-credential-badge glass-panel" data-tilt role="button" tabindex="0"
+              data-cert-img="./certificates/niki_skill_infosis.jpeg"
+              data-cert-title="Data Science Specialization"
+              data-cert-issuer="Infosys Springboard"
+              data-cert-badge="Industry Leader"
+              data-cert-code="INFY-DS-882"
+              aria-label="View Data Science Specialization certificate">
+              <div class="hologram-foil-layer"></div>
+              
+              <div class="badge-top-ribbon">
+                <div class="badge-serial">
+                  <span class="serial-prefix">CR //</span>
+                  <span class="serial-code">INFY-DS-882</span>
+                </div>
+                <span class="badge-accreditation-pill">Industry Leader</span>
+              </div>
+
+              <div class="badge-center-section">
+                <div class="hex-emblem-wrapper">
+                  <div class="hex-emblem">
+                    <span class="hex-symbol">DS</span>
+                  </div>
+                  <span class="hex-ambient-glow"></span>
+                </div>
+                <div class="badge-text-body">
+                  <h3 class="badge-title">Data Science Specialization</h3>
+                  <p class="badge-issuer">
+                    <span class="issuer-icon">📊</span>
+                    <span>Infosys Springboard</span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="badge-security-footer">
+                <div class="security-chip">
+                  <span class="chip-dot"></span>
+                  <span class="chip-text">AUTHENTICATED RECORD</span>
+                </div>
+                <div class="cert-card-view-cue">
+                  <span class="cue-text">Click to see certificate</span>
+                  <span class="cue-icon" aria-hidden="true">↗</span>
+                </div>
+              </div>
+            </article>
+          
+            
+            <article class="cert-credential-badge glass-panel" data-tilt role="button" tabindex="0"
+              data-cert-img="./certificates/niki_IOT_Intern.jpeg"
+              data-cert-title="Advanced Embedded Systems &amp; Internet of Things"
+              data-cert-issuer="Internship Training"
+              data-cert-badge="IoT &amp; Hardware"
+              data-cert-code="EMB-IOT-605"
+              aria-label="View Advanced Embedded Systems &amp; Internet of Things certificate">
+              <div class="hologram-foil-layer"></div>
+              
+              <div class="badge-top-ribbon">
+                <div class="badge-serial">
+                  <span class="serial-prefix">CR //</span>
+                  <span class="serial-code">EMB-IOT-605</span>
+                </div>
+                <span class="badge-accreditation-pill">IoT &amp; Hardware</span>
+              </div>
+
+              <div class="badge-center-section">
+                <div class="hex-emblem-wrapper">
+                  <div class="hex-emblem">
+                    <span class="hex-symbol">IoT</span>
+                  </div>
+                  <span class="hex-ambient-glow"></span>
+                </div>
+                <div class="badge-text-body">
+                  <h3 class="badge-title">Advanced Embedded Systems &amp; Internet of Things</h3>
+                  <p class="badge-issuer">
+                    <span class="issuer-icon">📡</span>
+                    <span>Internship Training</span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="badge-security-footer">
+                <div class="security-chip">
+                  <span class="chip-dot"></span>
+                  <span class="chip-text">AUTHENTICATED RECORD</span>
+                </div>
+                <div class="cert-card-view-cue">
+                  <span class="cue-text">Click to see certificate</span>
+                  <span class="cue-icon" aria-hidden="true">↗</span>
+                </div>
+              </div>
+            </article>
+          
+            
+            <article class="cert-credential-badge glass-panel" data-tilt role="button" tabindex="0"
+              data-cert-img="./certificates/niki_saleforce.jpeg"
+              data-cert-title="Salesforce Cloud &amp; Ecosystem"
+              data-cert-issuer="Training Internship"
+              data-cert-badge="Enterprise CRM"
+              data-cert-code="SF-CRM-331"
+              aria-label="View Salesforce Cloud &amp; Ecosystem certificate">
+              <div class="hologram-foil-layer"></div>
+              
+              <div class="badge-top-ribbon">
+                <div class="badge-serial">
+                  <span class="serial-prefix">CR //</span>
+                  <span class="serial-code">SF-CRM-331</span>
+                </div>
+                <span class="badge-accreditation-pill">Enterprise CRM</span>
+              </div>
+
+              <div class="badge-center-section">
+                <div class="hex-emblem-wrapper">
+                  <div class="hex-emblem">
+                    <span class="hex-symbol">CRM</span>
+                  </div>
+                  <span class="hex-ambient-glow"></span>
+                </div>
+                <div class="badge-text-body">
+                  <h3 class="badge-title">Salesforce Cloud &amp; Ecosystem</h3>
+                  <p class="badge-issuer">
+                    <span class="issuer-icon">☁️</span>
+                    <span>Training Internship</span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="badge-security-footer">
+                <div class="security-chip">
+                  <span class="chip-dot"></span>
+                  <span class="chip-text">AUTHENTICATED RECORD</span>
+                </div>
+                <div class="cert-card-view-cue">
+                  <span class="cue-text">Click to see certificate</span>
+                  <span class="cue-icon" aria-hidden="true">↗</span>
+                </div>
+              </div>
+            </article>
+          
+            
+            <article class="cert-credential-badge glass-panel" data-tilt role="button" tabindex="0"
+              data-cert-img="./certificates/niki_C_C++.jpeg"
+              data-cert-title="C &amp; C++ Programming"
+              data-cert-issuer="AICPE Certification"
+              data-cert-badge="Systems Programming"
+              data-cert-code="AICPE-CP-118"
+              aria-label="View C &amp; C++ Programming certificate">
+              <div class="hologram-foil-layer"></div>
+              
+              <div class="badge-top-ribbon">
+                <div class="badge-serial">
+                  <span class="serial-prefix">CR //</span>
+                  <span class="serial-code">AICPE-CP-118</span>
+                </div>
+                <span class="badge-accreditation-pill">Systems Programming</span>
+              </div>
+
+              <div class="badge-center-section">
+                <div class="hex-emblem-wrapper">
+                  <div class="hex-emblem">
+                    <span class="hex-symbol">C++</span>
+                  </div>
+                  <span class="hex-ambient-glow"></span>
+                </div>
+                <div class="badge-text-body">
+                  <h3 class="badge-title">C &amp; C++ Programming</h3>
+                  <p class="badge-issuer">
+                    <span class="issuer-icon">⚙️</span>
+                    <span>AICPE Certification</span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="badge-security-footer">
+                <div class="security-chip">
+                  <span class="chip-dot"></span>
+                  <span class="chip-text">AUTHENTICATED RECORD</span>
+                </div>
+                <div class="cert-card-view-cue">
+                  <span class="cue-text">Click to see certificate</span>
+                  <span class="cue-icon" aria-hidden="true">↗</span>
+                </div>
+              </div>
+            </article>
+          
+        </div>
+      </section>
+
+      <!-- Journey & Education Section (Academic & Experience) -->
+      <section class="section-shell journey-section" id="journey">
+        <div class="section-heading">
+          <p class="eyebrow">TIMELINE &amp; CREDENTIALS</p>
+          <h2>Journey &amp; <span class="gradient-text">Milestones.</span></h2>
+        </div>
+
+        <div class="journey-grid">
+          <!-- Experience & Highlights -->
+          <div class="journey-column">
+            <h3 class="subsection-title">
+              Industry Experience &amp; Research
+            </h3>
+            <div class="timeline">
+              
+                <article class="timeline-item glass-panel" data-tilt>
+                  <span class="timeline-dot"></span>
+                  <div class="timeline-meta">
+                    <span class="timeline-period">June 2026 – July 2026</span>
+                    <span class="timeline-badge">Industry Internship</span>
+                  </div>
+                  <h4>IT Intern</h4>
+                  <p class="timeline-place">Maharashtra Metro Rail Corporation Limited</p>
+                  <p class="timeline-location">MAHA-Metro · Nagpur, India</p>
+                  
+                    <p class="timeline-desc">Gained hands-on industry exposure in metro transit IT infrastructure, database management systems, network monitoring, and enterprise software operations.</p>
+                  
+                </article>
+              
+
+              
+                <article class="timeline-item timeline-item--research glass-panel" data-tilt>
+                  <span class="timeline-dot"></span>
+                  <div class="timeline-meta">
+                    <span class="timeline-period">Recognition</span>
+                    <span class="timeline-badge timeline-badge--gold">Honor</span>
+                  </div>
+                  <h4>Research &amp; Technical Presentation</h4>
+                  <p class="timeline-place">Published research paper on an intelligent IoT-based hand gesture controlled robot · IRJET</p>
+                </article>
+              
+                <article class="timeline-item timeline-item--research glass-panel" data-tilt>
+                  <span class="timeline-dot"></span>
+                  <div class="timeline-meta">
+                    <span class="timeline-period">Recognition</span>
+                    <span class="timeline-badge timeline-badge--gold">Honor</span>
+                  </div>
+                  <h4>Research &amp; Technical Presentation</h4>
+                  <p class="timeline-place">Presented Bank Management System paper · Spark-2025 National Conference</p>
+                </article>
+              
+                <article class="timeline-item timeline-item--research glass-panel" data-tilt>
+                  <span class="timeline-dot"></span>
+                  <div class="timeline-meta">
+                    <span class="timeline-period">Recognition</span>
+                    <span class="timeline-badge timeline-badge--gold">Honor</span>
+                  </div>
+                  <h4>Research &amp; Technical Presentation</h4>
+                  <p class="timeline-place">Active participant in Tech-Aura 2025 Technical Competition</p>
+                </article>
+              
+            </div>
+          </div>
+
+          <!-- Academic Degrees -->
+          <div class="journey-column">
+            <h3 class="subsection-title">
+              Academic Degrees
+            </h3>
+            <div class="education-list">
+              
+                <article class="education-card glass-panel" data-tilt>
+                  <span class="education-icon">🎓</span>
+                  <span class="timeline-period">2026 – 2028 (Currently Pursuing)</span>
+                  <h4>M.Tech · Computer Science &amp; Engineering</h4>
+                  <p class="timeline-place">G.H. Raisoni College of Engineering and Management, Nagpur</p>
+                  
+                    <p class="education-highlight">Advanced Computer Science, Distributed Systems &amp; Intelligent Computing</p>
+                  
+                </article>
+              
+                <article class="education-card glass-panel" data-tilt>
+                  <span class="education-icon">🎓</span>
+                  <span class="timeline-period">Graduated 2026</span>
+                  <h4>B.Tech · Artificial Intelligence &amp; Data Science Engineering</h4>
+                  <p class="timeline-place">K.D.K. College of Engineering, Nagpur · RTM Nagpur University</p>
+                  
+                    <p class="education-highlight">Machine Learning, Neural Networks, Big Data &amp; Full Stack Architecture</p>
+                  
+                </article>
+              
+                <article class="education-card glass-panel" data-tilt>
+                  <span class="education-icon">🎓</span>
+                  <span class="timeline-period">2022</span>
+                  <h4>Higher Secondary Certificate (HSC)</h4>
+                  <p class="timeline-place">Kamla Nehru Mahavidyalaya, Nagpur · Maharashtra State Board</p>
+                  
+                    <p class="education-highlight">Science &amp; Mathematics Stream</p>
+                  
+                </article>
+              
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Terminal Section (Glassmorphic & Interactive 3D Motion) -->
+      <section class="section-shell contact-section" id="contact">
+        <div class="contact-terminal glass-panel" data-tilt>
+          <div class="glass-shine"></div>
+          <div class="terminal-bar">
+            <span class="term-dot red"></span>
+            <span class="term-dot yellow"></span>
+            <span class="term-dot green"></span>
+            <span class="term-title">COMMUNICATION LINK</span>
+          </div>
+
+          <div class="terminal-body">
+            <p class="eyebrow">OPEN CHANNEL</p>
+            <h2>Let’s Build Something <br><span class="gradient-text">Great Together.</span></h2>
+            <p class="contact-intro">
+              Whether you have an ambitious web project, need an engineer passionate about AI and systems development, or want to collaborate on innovative technology, my inbox is open.
+            </p>
+
+            <div class="contact-details-grid">
+              <!-- Gmail Click -> Opens Mail Page directly to send email -->
+              <a
+                class="contact-card-link contact-card-link--gmail"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=nikita.yende4@gmail.com&su=Hello%20Nikita%20-%20Project%20Inquiry"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Send an email to nikita.yende4@gmail.com via Gmail"
+              >
+                <span class="contact-icon contact-icon--gmail">✉</span>
+                <div class="contact-info">
+                  <span class="contact-label">EMAIL ADDRESS</span>
+                  <span class="contact-value">nikita.yende4@gmail.com</span>
+                </div>
+                <span class="contact-arrow" aria-hidden="true">↗</span>
+              </a>
+
+              <!-- Phone Number Click -> Opens WhatsApp -->
+              <a
+                class="contact-card-link contact-card-link--whatsapp"
+                href="https://wa.me/917038380876?text=Hello%20Nikita,%20I%20saw%20your%20portfolio"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Chat directly on WhatsApp with Nikita (+91 7038380876)"
+              >
+                <span class="contact-icon contact-icon--whatsapp">💬</span>
+                <div class="contact-info">
+                  <span class="contact-label">DIRECT PHONE / WHATSAPP</span>
+                  <span class="contact-value">+91 7038380876</span>
+                </div>
+                <span class="contact-arrow" aria-hidden="true">↗</span>
+              </a>
+
+              <!-- LinkedIn -->
+              <a class="contact-card-link" href="https://linkedin.com/in/nikita-yende-677958288" target="_blank" rel="noopener noreferrer" title="Visit Nikita's LinkedIn Profile">
+                <span class="contact-icon contact-icon--linkedin">in</span>
+                <div class="contact-info">
+                  <span class="contact-label">LINKEDIN PROFILE</span>
+                  <span class="contact-value">nikita-yende</span>
+                </div>
+                <span class="contact-arrow" aria-hidden="true">↗</span>
+              </a>
+
+              <!-- GitHub -->
+              <a class="contact-card-link" href="https://github.com/Nikitayende" target="_blank" rel="noopener noreferrer" title="Visit Nikita's GitHub Repository">
+                <span class="contact-icon contact-icon--github">⌥</span>
+                <div class="contact-info">
+                  <span class="contact-label">GITHUB REPOSITORY</span>
+                  <span class="contact-value">Nikitayende</span>
+                </div>
+                <span class="contact-arrow" aria-hidden="true">↗</span>
+              </a>
+            </div>
+
+            <div class="contact-action-row">
+              <a
+                class="button button--primary"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=nikita.yende4@gmail.com&su=Hello%20Nikita%20-%20Project%20Inquiry"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>Initiate Dialogue</span>
+                <span class="btn-arrow" aria-hidden="true">→</span>
+              </a>
+              <button class="button button--download" id="btn-open-resume-contact" type="button">
+                <span class="btn-icon">📄</span>
+                <span>View Resume</span>
+              </button>
+              <button class="button button--glass" id="btn-copy-email" type="button" data-email="nikita.yende4@gmail.com">
+                <span>Copy Email</span>
+                <span class="copy-status" aria-hidden="true">📋</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Interactive Resume Viewer Modal (Only appears when user clicks Resume) -->
+    <div class="resume-modal-overlay" id="resume-modal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="resume-modal-backdrop" aria-label="Close Resume Viewer"></div>
+      <div class="resume-modal-dialog glass-panel">
+        <div class="resume-modal-header">
+          <div class="resume-meta-info">
+            <span class="resume-pdf-icon">📄</span>
+            <div class="resume-title-box">
+              <span class="resume-filename">Nikita_Yende_Resume.pdf</span>
+              <span class="resume-filespecs">Official Curriculum Vitae • Verified Record • 114 KB</span>
+            </div>
+          </div>
+          <div class="resume-modal-actions">
+            <a class="button button--primary button--sm" href="./Nikita_Resume.pdf" download="Nikita_Yende_Resume.pdf" title="Download official PDF copy">
+              <span class="btn-icon">⬇</span>
+              <span>Download PDF</span>
+            </a>
+            <button class="resume-modal-close" id="btn-close-resume" type="button" aria-label="Close Resume Viewer">✕</button>
+          </div>
+        </div>
+
+        <div class="resume-modal-viewport">
+          <iframe
+            src="./Nikita_Resume.pdf#toolbar=0"
+            class="resume-modal-frame"
+            title="Nikita Yende Official Resume"
+            loading="lazy"
+          ></iframe>
+        </div>
+
+        <div class="resume-modal-footer">
+          <div class="resume-highlights-row">
+            <div class="resume-highlight-pill">
+              <span class="pill-dot"></span>
+              <span><b>Education:</b> M.Tech CSE &amp; B.Tech AI &amp; Data Science</span>
+            </div>
+            <div class="resume-highlight-pill">
+              <span class="pill-dot"></span>
+              <span><b>Specialization:</b> Python, Flask, SQL, Machine Learning</span>
+            </div>
+          </div>
+          <div class="resume-footer-buttons">
+            <a class="button button--primary button--sm" href="./Nikita_Resume.pdf" download="Nikita_Yende_Resume.pdf">
+              <span class="btn-icon">📄</span>
+              <span>Download PDF (114 KB)</span>
+            </a>
+            <button class="button button--glass button--sm" id="btn-close-resume-footer" type="button">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Certificate Viewer Modal -->
+    <div class="resume-modal-overlay cert-modal-overlay" id="cert-modal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="resume-modal-backdrop" id="cert-modal-backdrop" aria-label="Close Certificate Viewer"></div>
+      <div class="resume-modal-dialog cert-modal-dialog glass-panel">
+        <div class="resume-modal-header">
+          <div class="resume-meta-info">
+            <span class="cert-modal-icon" aria-hidden="true">📜</span>
+            <div class="resume-title-box">
+              <span class="resume-filename" id="cert-modal-title">Certificate Title</span>
+              <span class="resume-filespecs" id="cert-modal-specs">Verified Credential Record • Authenticated</span>
+            </div>
+          </div>
+          <div class="resume-modal-actions">
+            <a class="button button--primary button--sm" id="cert-modal-download" href="#" download="Certificate.jpeg" title="Download official certificate copy">
+              <span class="btn-icon">⬇</span>
+              <span>Download</span>
+            </a>
+            <a class="button button--glass button--sm" id="cert-modal-view-tab" href="#" target="_blank" rel="noopener noreferrer" title="Open full-resolution certificate in new tab">
+              <span class="btn-icon">↗</span>
+              <span>Full View</span>
+            </a>
+            <button class="resume-modal-close" id="btn-close-cert" type="button" aria-label="Close Certificate Viewer">✕</button>
+          </div>
+        </div>
+
+        <div class="resume-modal-viewport cert-modal-viewport">
+          <div class="cert-modal-img-container">
+            <img id="cert-modal-img" src="" alt="Certificate Preview" class="cert-modal-img" />
+          </div>
+        </div>
+
+        <div class="resume-modal-footer">
+          <div class="resume-highlights-row">
+            <div class="resume-highlight-pill">
+              <span class="pill-dot"></span>
+              <span id="cert-modal-badge">Verified Credential</span>
+            </div>
+            <div class="resume-highlight-pill">
+              <span class="pill-dot"></span>
+              <span id="cert-modal-issuer">Accredited Body</span>
+            </div>
+          </div>
+          <div class="resume-footer-buttons">
+            <a class="button button--primary button--sm" id="cert-modal-footer-download" href="#" download="Certificate.jpeg">
+              <span class="btn-icon">📜</span>
+              <span>Download Certificate</span>
+            </a>
+            <button class="button button--glass button--sm" id="btn-close-cert-footer" type="button">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -15,15 +15,15 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="/styles.css">
-    <script type="module" src="/drone-scene.js"></script>
-    <script src="/app.js" defer></script>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./drone-scene.js"></script>
+    <script src="./app.js" defer></script>
   </head>
   <body>
     <%
       // Safe Data Normalization
       const name = portfolio.name || "Nikita Yende";
-      const photo = portfolio.photo || "/certificates/niki_pic.jpeg";
+      const photo = (portfolio.photo || "./certificates/niki_pic.jpeg").replace(/^\//, "./");
       const summary = portfolio.summary || "M.Tech Computer Science and Engineering student with a B.Tech background in Artificial Intelligence and Data Science Engineering.";
       const stats = (portfolio.stats && portfolio.stats.length) ? portfolio.stats : [
         { number: "02", label: "Featured Projects", icon: "⚡" },
@@ -350,7 +350,7 @@
             </ul>
             <div class="research-action-row">
               <button class="button button--primary button--view-cert" id="btn-view-research-cert" type="button"
-                data-cert-img="<%= research.certificate || '/certificates/niki_irjet.jpeg' %>"
+                data-cert-img="<%= (research.certificate || './certificates/niki_irjet.jpeg').replace(/^\//, './') %>"
                 data-cert-title="<%= research.title %> — Published Research Certificate"
                 data-cert-issuer="<%= research.journal || 'IRJET' %> · Published Paper Credential"
                 data-cert-badge="Research Publication"
@@ -468,12 +468,12 @@
         <div class="certifications-standalone-grid">
           <% 
             const certMetadata = [
-              { code: "IITK-ML-984", symbol: "ML", icon: "🧠", image: "/certificates/niki_nptel_ml.jpeg" },
-              { code: "IITR-DL-412", symbol: "DL", icon: "⚡", image: "/certificates/niki_nptel_dl.jpeg" },
-              { code: "INFY-DS-882", symbol: "DS", icon: "📊", image: "/certificates/niki_skill_infosis.jpeg" },
-              { code: "EMB-IOT-605", symbol: "IoT", icon: "📡", image: "/certificates/niki_IOT_Intern.jpeg" },
-              { code: "SF-CRM-331", symbol: "CRM", icon: "☁️", image: "/certificates/niki_saleforce.jpeg" },
-              { code: "AICPE-CP-118", symbol: "C++", icon: "⚙️", image: "/certificates/niki_C_C++.jpeg" },
+              { code: "IITK-ML-984", symbol: "ML", icon: "🧠", image: "./certificates/niki_nptel_ml.jpeg" },
+              { code: "IITR-DL-412", symbol: "DL", icon: "⚡", image: "./certificates/niki_nptel_dl.jpeg" },
+              { code: "INFY-DS-882", symbol: "DS", icon: "📊", image: "./certificates/niki_skill_infosis.jpeg" },
+              { code: "EMB-IOT-605", symbol: "IoT", icon: "📡", image: "./certificates/niki_IOT_Intern.jpeg" },
+              { code: "SF-CRM-331", symbol: "CRM", icon: "☁️", image: "./certificates/niki_saleforce.jpeg" },
+              { code: "AICPE-CP-118", symbol: "C++", icon: "⚙️", image: "./certificates/niki_C_C++.jpeg" },
             ];
           %>
           <% certifications.forEach((cert, certIdx) => { %>
@@ -483,7 +483,8 @@
               const certIssuer = isObj ? (cert.issuer || '') : (cert.includes('·') ? cert.split('·').slice(1).join('·').trim() : 'Accredited');
               const certBadge = isObj && cert.badge ? cert.badge : 'Verified Credential';
               const meta = certMetadata[certIdx] || { code: 'CR-2025-' + (certIdx + 1), symbol: 'CERT', icon: '★', image: '' };
-              const certImage = (isObj && cert.image) ? cert.image : (meta.image || '');
+              const certRawImage = (isObj && cert.image) ? cert.image : (meta.image || '');
+              const certImage = certRawImage.replace(/^\//, './');
               const certCode = (isObj && cert.code) ? cert.code : meta.code;
               const certSymbol = (isObj && cert.symbol) ? cert.symbol : meta.symbol;
               const certIcon = (isObj && cert.icon) ? cert.icon : meta.icon;
@@ -711,7 +712,7 @@
             </div>
           </div>
           <div class="resume-modal-actions">
-            <a class="button button--primary button--sm" href="/download-resume" download="Nikita_Yende_Resume.pdf" title="Download official PDF copy">
+            <a class="button button--primary button--sm" href="./Nikita_Resume.pdf" download="Nikita_Yende_Resume.pdf" title="Download official PDF copy">
               <span class="btn-icon">⬇</span>
               <span>Download PDF</span>
             </a>
@@ -721,7 +722,7 @@
 
         <div class="resume-modal-viewport">
           <iframe
-            src="/Nikita_Resume.pdf#toolbar=0"
+            src="./Nikita_Resume.pdf#toolbar=0"
             class="resume-modal-frame"
             title="Nikita Yende Official Resume"
             loading="lazy"
@@ -740,7 +741,7 @@
             </div>
           </div>
           <div class="resume-footer-buttons">
-            <a class="button button--primary button--sm" href="/download-resume" download="Nikita_Yende_Resume.pdf">
+            <a class="button button--primary button--sm" href="./Nikita_Resume.pdf" download="Nikita_Yende_Resume.pdf">
               <span class="btn-icon">📄</span>
               <span>Download PDF (114 KB)</span>
             </a>

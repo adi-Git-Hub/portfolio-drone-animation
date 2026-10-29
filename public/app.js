@@ -1,4 +1,6 @@
-// Theme Manager
+// ============================================================================
+// 1. Theme Manager
+// ============================================================================
 const root = document.documentElement;
 const themeButtons = document.querySelectorAll("[data-theme-choice]");
 const savedTheme = window.localStorage.getItem("portfolio-theme");
@@ -22,7 +24,26 @@ themeButtons.forEach((btn) => {
   btn.addEventListener("click", () => setTheme(btn.dataset.themeChoice));
 });
 
-// Soft Pure White Cursor Spotlight Pool
+// ============================================================================
+// 2. Fixed Header Dynamic Elevation on Scroll
+// ============================================================================
+const siteHeader = document.querySelector(".site-header");
+let isHeaderScrolled = false;
+
+function checkHeaderScroll() {
+  const scrolled = window.scrollY > 20;
+  if (scrolled !== isHeaderScrolled && siteHeader) {
+    isHeaderScrolled = scrolled;
+    siteHeader.classList.toggle("site-header--scrolled", scrolled);
+  }
+}
+
+window.addEventListener("scroll", checkHeaderScroll, { passive: true });
+checkHeaderScroll();
+
+// ============================================================================
+// 3. High-Performance Cursor Spotlight Pool & Card Shimmer
+// ============================================================================
 const cursorSpotlight = document.querySelector("#cursor-spotlight");
 
 let targetPointerX = window.innerWidth / 2;
@@ -33,58 +54,67 @@ let spotlightY = targetPointerY;
 document.addEventListener("pointermove", (e) => {
   targetPointerX = e.clientX;
   targetPointerY = e.clientY;
-
-  // Update card spot coordinates for subtle holographic spotlight shimmer
-  document.querySelectorAll("[data-tilt], .stack-deck-card, .skill-token-card, .cert-credential-badge, .resume-preview-card").forEach((card) => {
-    const bounds = card.getBoundingClientRect();
-    if (
-      targetPointerX >= bounds.left - 50 &&
-      targetPointerX <= bounds.right + 50 &&
-      targetPointerY >= bounds.top - 50 &&
-      targetPointerY <= bounds.bottom + 50
-    ) {
-      card.style.setProperty("--spot-x", `${targetPointerX - bounds.left}px`);
-      card.style.setProperty("--spot-y", `${targetPointerY - bounds.top}px`);
-    }
-  });
 }, { passive: true });
+
+// Dedicated per-card shimmer without whole-page DOM query churn
+document.querySelectorAll("[data-tilt], .stack-deck-card, .skill-token-card, .cert-credential-badge").forEach((card) => {
+  card.addEventListener("pointermove", (e) => {
+    if (e.pointerType === "touch") return;
+    const bounds = card.getBoundingClientRect();
+    card.style.setProperty("--spot-x", `${e.clientX - bounds.left}px`);
+    card.style.setProperty("--spot-y", `${e.clientY - bounds.top}px`);
+  }, { passive: true });
+});
 
 function updateSpotlight() {
   if (cursorSpotlight) {
-    spotlightX += (targetPointerX - spotlightX) * 0.25;
-    spotlightY += (targetPointerY - spotlightY) * 0.25;
-    cursorSpotlight.style.transform = `translate3d(${spotlightX}px, ${spotlightY}px, 0)`;
+    spotlightX += (targetPointerX - spotlightX) * 0.22;
+    spotlightY += (targetPointerY - spotlightY) * 0.22;
+    cursorSpotlight.style.transform = `translate3d(${spotlightX.toFixed(1)}px, ${spotlightY.toFixed(1)}px, 0)`;
   }
   requestAnimationFrame(updateSpotlight);
 }
 requestAnimationFrame(updateSpotlight);
 
-// 3D Card Interactive Tilt Effect
+// ============================================================================
+// 4. Apple-Restrained 3D Card Interactive Tilt Effect
+// ============================================================================
+const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const tiltElements = document.querySelectorAll("[data-tilt]");
 
-tiltElements.forEach((el) => {
-  el.addEventListener("pointermove", (e) => {
-    // Keep cards level on touch devices to avoid stuck tilted states
-    if (e.pointerType === "touch") return;
+if (!isReducedMotion) {
+  tiltElements.forEach((el) => {
+    let tiltRafId = null;
 
-    const rect = el.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
+    el.addEventListener("pointermove", (e) => {
+      if (e.pointerType === "touch") return;
 
-    const rotateX = ((y - centerY) / centerY) * -6;
-    const rotateY = ((x - centerX) / centerX) * 6;
+      if (tiltRafId) cancelAnimationFrame(tiltRafId);
+      tiltRafId = requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
 
-    el.style.transform = `perspective(800px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-3px)`;
+        // Controlled, subtle rotation (-4deg to +4deg)
+        const rotateX = ((y - centerY) / centerY) * -4.0;
+        const rotateY = ((x - centerX) / centerX) * 4.0;
+
+        el.style.transform = `perspective(900px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-2px)`;
+      });
+    }, { passive: true });
+
+    el.addEventListener("pointerleave", () => {
+      if (tiltRafId) cancelAnimationFrame(tiltRafId);
+      el.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+    });
   });
+}
 
-  el.addEventListener("pointerleave", () => {
-    el.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0px)";
-  });
-});
-
-// Copy Email Button
+// ============================================================================
+// 5. Copy Email Button with Tactile Feedback
+// ============================================================================
 const btnCopyEmail = document.querySelector("#btn-copy-email");
 if (btnCopyEmail) {
   btnCopyEmail.addEventListener("click", async () => {
@@ -99,48 +129,56 @@ if (btnCopyEmail) {
       setTimeout(() => {
         btnCopyEmail.innerHTML = originalHtml;
         btnCopyEmail.style.borderColor = "";
-      }, 2500);
-    } catch (err) {
+      }, 2400);
+    } catch {
       window.location.href = `mailto:${email}`;
     }
   });
 }
 
-// Active Nav Indicator on Scroll (Accounts for fixed header)
+// ============================================================================
+// 6. Active Nav Indicator (Using IntersectionObserver for Zero Layout Thrash)
+// ============================================================================
 const sections = document.querySelectorAll("main > section");
 const navLinks = document.querySelectorAll(".nav a");
 
-window.addEventListener("scroll", () => {
-  let currentSectionId = "";
-  const scrollPos = window.scrollY + 160;
-
-  sections.forEach((section) => {
-    if (scrollPos >= section.offsetTop) {
-      currentSectionId = section.getAttribute("id");
+if ("IntersectionObserver" in window && sections.length > 0) {
+  const navObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const currentId = entry.target.getAttribute("id");
+          navLinks.forEach((link) => {
+            const href = link.getAttribute("href");
+            link.classList.toggle("nav-link--active", href === `#${currentId}`);
+          });
+        }
+      });
+    },
+    {
+      rootMargin: "-20% 0px -65% 0px",
+      threshold: [0, 0.2],
     }
-  });
+  );
 
-  navLinks.forEach((link) => {
-    const href = link.getAttribute("href");
-    if (href === `#${currentSectionId}`) {
-      link.classList.add("nav-link--active");
-    } else {
-      link.classList.remove("nav-link--active");
-    }
-  });
-}, { passive: true });
+  sections.forEach((s) => navObserver.observe(s));
+}
 
-// 3D Stacking Card Deck on Scroll (Cards slide back on scroll-down, forward on scroll-up)
+// ============================================================================
+// 7. 3D Stacking Card Deck on Scroll (Fluid, Frame-Budgeted & Reversible)
+// ============================================================================
 const deckCards = Array.from(document.querySelectorAll(".stack-deck-card"));
 const stackDeckContainer = document.querySelector("#stack-deck");
+let isStackUpdating = false;
 
 function updateDeckStacking() {
   if (!deckCards.length || !stackDeckContainer) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const stickyTop = 110;
+  const isMobile = window.innerWidth <= 640;
+  const stickyTop = isMobile ? 80 : 110;
 
   deckCards.forEach((card, idx) => {
-    // If it's the last card, it doesn't need to recede behind another card
     if (idx === deckCards.length - 1) {
       card.style.transform = "scale(1) translate3d(0, 0, 0)";
       card.style.filter = "brightness(1)";
@@ -159,10 +197,10 @@ function updateDeckStacking() {
     if (nextRect.top < overlapStart) {
       const progress = Math.min(Math.max((overlapStart - nextRect.top) / (overlapStart - overlapEnd), 0), 1);
       
-      const scale = 1 - progress * 0.06;
-      const translateY = -progress * 16;
-      const translateZ = -progress * 50;
-      const brightness = 1 - progress * 0.22;
+      const scale = 1 - progress * 0.055;
+      const translateY = -progress * 15;
+      const translateZ = -progress * 45;
+      const brightness = 1 - progress * 0.20;
 
       card.style.transform = `perspective(1000px) scale(${scale.toFixed(3)}) translate3d(0, ${translateY.toFixed(1)}px, ${translateZ.toFixed(1)}px)`;
       card.style.filter = `brightness(${brightness.toFixed(2)})`;
@@ -175,11 +213,116 @@ function updateDeckStacking() {
   });
 }
 
-window.addEventListener("scroll", updateDeckStacking, { passive: true });
-window.addEventListener("resize", updateDeckStacking, { passive: true });
-updateDeckStacking();
+function requestDeckUpdate() {
+  if (isStackUpdating) return;
+  isStackUpdating = true;
+  requestAnimationFrame(() => {
+    updateDeckStacking();
+    isStackUpdating = false;
+  });
+}
 
-// Interactive Resume Viewer Modal (Only appears when user clicks Resume)
+window.addEventListener("scroll", requestDeckUpdate, { passive: true });
+window.addEventListener("resize", requestDeckUpdate, { passive: true });
+requestDeckUpdate();
+
+// ============================================================================
+// 8. Apple-Style Cinematic Scroll Reveal System (Bidirectional & Natural)
+// ============================================================================
+function initScrollReveals() {
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // 1. Reveal Section Headings
+  document.querySelectorAll(".section-heading").forEach((heading) => {
+    heading.classList.add("reveal-item");
+  });
+
+  // 2. Reveal Research Hero Card
+  const researchCard = document.querySelector(".research-hero-card");
+  if (researchCard) {
+    researchCard.classList.add("reveal-item", "reveal-scale");
+  }
+
+  // 3. Reveal Project Panels with Consistent Directional Movement
+  document.querySelectorAll(".project-split-row").forEach((row) => {
+    const card = row.querySelector(".project-card");
+    if (card) {
+      card.classList.add("reveal-item");
+      if (row.classList.contains("project-split-row--card-left")) {
+        card.classList.add("reveal-left");
+      } else {
+        card.classList.add("reveal-right");
+      }
+    }
+  });
+
+  // 4. Staggered Reveals for Certifications Standalone Grid
+  document.querySelectorAll(".certifications-standalone-grid .cert-credential-badge").forEach((badge, idx) => {
+    badge.classList.add("reveal-item");
+    badge.style.setProperty("--stagger-idx", String(idx % 3));
+  });
+
+  // 5. Staggered Reveals for Timeline Items & Education Cards
+  document.querySelectorAll(".timeline-item").forEach((item, idx) => {
+    item.classList.add("reveal-item");
+    item.style.setProperty("--stagger-idx", String(Math.min(idx, 4)));
+  });
+  document.querySelectorAll(".education-card").forEach((card, idx) => {
+    card.classList.add("reveal-item");
+    card.style.setProperty("--stagger-idx", String(Math.min(idx, 4)));
+  });
+
+  // 6. Reveal Contact Terminal
+  const contactTerminal = document.querySelector(".contact-terminal");
+  if (contactTerminal) {
+    contactTerminal.classList.add("reveal-item", "reveal-scale");
+  }
+
+  // If user prefers reduced motion, show everything immediately without transform
+  if (prefersReduced) {
+    document.querySelectorAll(".reveal-item").forEach((el) => {
+      el.classList.add("reveal-visible");
+    });
+    return;
+  }
+
+  // IntersectionObserver for fluid forward and backward transitions
+  if ("IntersectionObserver" in window) {
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal-visible");
+          } else {
+            // Natural reversal: When scrolling up, elements exiting towards the bottom reset gently
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            if (entry.boundingClientRect.top > viewportHeight - 40) {
+              entry.target.classList.remove("reveal-visible");
+            }
+          }
+        });
+      },
+      {
+        threshold: [0, 0.12],
+        rootMargin: "0px 0px -40px 0px",
+      }
+    );
+
+    document.querySelectorAll(".reveal-item").forEach((el) => {
+      revealObserver.observe(el);
+    });
+  } else {
+    document.querySelectorAll(".reveal-item").forEach((el) => {
+      el.classList.add("reveal-visible");
+    });
+  }
+}
+
+initScrollReveals();
+
+// ============================================================================
+// 9. Interactive Resume Viewer Modal
+// ============================================================================
 const resumeModal = document.querySelector("#resume-modal");
 const openResumeButtons = document.querySelectorAll(
   "#btn-open-resume-header, #btn-open-resume-hero, #btn-open-resume-contact, #btn-open-resume-mobile, [data-open-resume]"
@@ -208,7 +351,9 @@ openResumeButtons.forEach((btn) => btn.addEventListener("click", () => {
 }));
 closeResumeButtons.forEach((btn) => btn.addEventListener("click", closeResume));
 
-// Interactive Certificate Viewer Modal (Opens when user clicks any certificate or research certificate)
+// ============================================================================
+// 10. Interactive Certificate Viewer Modal
+// ============================================================================
 const certModal = document.querySelector("#cert-modal");
 const certModalTitle = document.querySelector("#cert-modal-title");
 const certModalSpecs = document.querySelector("#cert-modal-specs");
@@ -229,7 +374,7 @@ function openCertificate(data) {
   const issuer = data.issuer || "Verified Accredited Organization";
   const badge = data.badge || "Verified Credential";
   const code = data.code || "CERT-RECORD";
-  const imgSrc = data.image || "/certificates/niki_skill_infosis.jpeg";
+  const imgSrc = data.image || "./certificates/niki_skill_infosis.jpeg";
 
   if (certModalTitle) certModalTitle.textContent = title;
   if (certModalSpecs) certModalSpecs.textContent = `${code} • ${issuer} • Authenticated`;
@@ -314,7 +459,9 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// Mobile Navigation Drawer Manager
+// ============================================================================
+// 11. Mobile Navigation Drawer Manager
+// ============================================================================
 const mobileMenuBtn = document.querySelector("#mobile-menu-btn");
 const mobileNavDrawer = document.querySelector("#mobile-nav-drawer");
 const mobileNavClose = document.querySelector("#mobile-nav-close");

@@ -1,4 +1,4 @@
-import * as THREE from "/vendor/three/build/three.module.js";
+import * as THREE from "./vendor/three/build/three.module.js";
 
 const stage = document.querySelector("#drone-scene");
 const canvas = document.querySelector("#drone-canvas");
@@ -396,15 +396,16 @@ function buildDrone() {
   drone.add(droneGlow);
 }
 
-// Base Scroll Waypoints
+// Base Scroll Waypoints — Coherent, physically continuous path with no crossing jumps
 const waypoints = [
-  { progress: 0.00, x: 2.3,   y: 0.35,  z: 0.0, pitch: 0.04,  yaw: -0.22, altitude: 22.0 }, // Hero (Right)
-  { progress: 0.24, x: 2.35,  y: -0.05, z: 0.2, pitch: 0.06,  yaw: -0.25, altitude: 15.0 }, // Tech Stack (Fixed Stage)
-  { progress: 0.46, x: 2.20,  y: 0.08,  z: 0.2, pitch: 0.05,  yaw: -0.20, altitude: 11.5 }, // Research (Right)
-  { progress: 0.64, x: 2.35,  y: 0.05,  z: 0.3, pitch: 0.05,  yaw: -0.22, altitude: 8.5 },  // Project 1 (Fixed Stage Right)
-  { progress: 0.78, x: -2.35, y: 0.05,  z: 0.3, pitch: 0.05,  yaw: 0.24,  altitude: 6.0 },  // Project 2 (Fixed Stage Left)
-  { progress: 0.88, x: 2.10,  y: -0.05, z: 0.2, pitch: 0.04,  yaw: -0.18, altitude: 3.5 },  // Certifications / Journey
-  { progress: 1.00, x: 0.00,  y: -0.45, z: 0.4, pitch: -0.02, yaw: 0.0,   altitude: 1.8 },  // Contact (Center)
+  { progress: 0.00, x: 2.30,  y: 0.35,  z: 0.00, pitch: 0.04,  yaw: -0.22, altitude: 22.0 }, // Hero (Right)
+  { progress: 0.22, x: 2.35,  y: -0.05, z: 0.15, pitch: 0.05,  yaw: -0.24, altitude: 15.0 }, // Tech Stack (Fixed Stage Right)
+  { progress: 0.44, x: 2.25,  y: 0.06,  z: 0.15, pitch: 0.04,  yaw: -0.20, altitude: 11.5 }, // Research (Right)
+  { progress: 0.60, x: 2.35,  y: 0.05,  z: 0.20, pitch: 0.04,  yaw: -0.22, altitude: 8.5 },  // Project 1 (Fixed Stage Right)
+  { progress: 0.74, x: -2.35, y: 0.05,  z: 0.20, pitch: 0.04,  yaw: 0.22,  altitude: 6.0 },  // Project 2 (Fixed Stage Left)
+  { progress: 0.85, x: -2.25, y: -0.08, z: -0.45, pitch: 0.03, yaw: 0.18,  altitude: 4.2 },  // Certifications (Recessed in Depth on Left)
+  { progress: 0.94, x: -1.20, y: -0.05, z: -0.35, pitch: 0.02, yaw: 0.08,  altitude: 3.0 },  // Journey (Smooth Transition towards Center)
+  { progress: 1.00, x: 0.00,  y: 0.65,  z: -0.20, pitch: -0.02, yaw: 0.00, altitude: 1.8 },  // Contact (Centered above terminal)
 ];
 
 function getScrollWaypoint(progress) {
@@ -416,6 +417,7 @@ function getScrollWaypoint(progress) {
     const b = waypoints[i + 1];
     if (progress >= a.progress && progress <= b.progress) {
       const t = (progress - a.progress) / (b.progress - a.progress);
+      // Apple smoothstep curve for natural velocity continuity
       const ease = t * t * (3 - 2 * t);
       return {
         x: lerp(a.x, b.x, ease),
@@ -611,7 +613,7 @@ try {
       droneState.gimbalPitch = lerp(droneState.gimbalPitch, 0, 0.1);
       gimbal.rotation.set(droneState.gimbalPitch, droneState.gimbalYaw, 0);
     } else {
-      // Desktop View: Identical original flight behavior
+      // Desktop View: Fluid, physically consistent flight tied to scroll progression
       drone.visible = true;
       drone.scale.setScalar(0.52);
       if (cursorSpotlight) cursorSpotlight.intensity = 22;
@@ -619,68 +621,35 @@ try {
       if (softBeamGroup) softBeamGroup.visible = true;
       if (dustMotesMesh) dustMotesMesh.visible = true;
 
-      // 1. Tech Stack Detection
-      if (stackEl) {
-        const rect = stackEl.getBoundingClientRect();
-        if (rect.top <= viewH * 0.65 && rect.bottom >= viewH * 0.25) {
-          isTechStackZone = true;
-        }
-      }
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      // 2. Projects Section Detection & Right-to-Left Sweep
-      if (workEl && projectRows.length >= 2) {
-        const workRect = workEl.getBoundingClientRect();
-        const row2Rect = projectRows[1].getBoundingClientRect();
+      // Restrained cursor influence to prevent collision with content
+      const cursorTrackingX = prefersReduced ? 0 : cursorNormX * 0.55;
+      const cursorTrackingY = prefersReduced ? 0 : cursorNormY * 0.30;
+      const cursorBankRoll = prefersReduced ? 0 : -cursorNormX * 0.12;
+      const cursorPitchTilt = prefersReduced ? 0 : cursorNormY * 0.08;
 
-        if (workRect.top <= viewH * 0.75 && workRect.bottom >= viewH * 0.15) {
-          isProjectZone = true;
+      // Subtle, high-precision micro-hover harmonics
+      const wanderX = prefersReduced ? 0 : Math.sin(time * 0.6) * 0.05;
+      const wanderY = prefersReduced ? 0 : Math.cos(time * 0.8) * 0.04;
 
-          // When Project 2 scrolls up towards center of viewport:
-          // Transition from Right (+2.35) to Left (-2.35)
-          const transitionProgress = clamp((viewH * 0.72 - row2Rect.top) / (viewH * 0.55), 0, 1);
-          const smoothT = transitionProgress * transitionProgress * (3 - 2 * transitionProgress);
-          projectXTarget = lerp(2.35, -2.35, smoothT);
-        }
-      }
-
-      const isFixedZone = (isTechStackZone || isProjectZone);
-      const roamFactor = isFixedZone ? 0.0 : 1.0;
-
-      const cursorTrackingX = cursorNormX * 3.4 * roamFactor;
-      const cursorTrackingY = cursorNormY * 1.9 * roamFactor;
-      const cursorBankRoll = -cursorNormX * 0.22 * roamFactor;
-      const cursorPitchTilt = cursorNormY * 0.14 * roamFactor;
-
-      // Organic hover floating harmonics
-      const wanderX = (Math.sin(time * 0.8) * 0.22) * roamFactor;
-      const wanderY = (Math.cos(time * 1.05) * 0.18) * roamFactor;
-
-      // Base position target
+      // Base position target from continuous waypoints
       let targetBaseX = waypoint.x;
       let targetBaseY = waypoint.y;
+      let targetBaseZ = waypoint.z;
       let targetBasePitch = waypoint.pitch;
       let targetBaseYaw = waypoint.yaw;
 
-      if (isTechStackZone) {
-        targetBaseX = 2.35;
-        targetBaseY = -0.05;
-        targetBaseYaw = -0.25;
-      } else if (isProjectZone) {
-        targetBaseX = projectXTarget;
-        targetBaseY = 0.05;
-        targetBaseYaw = (projectXTarget < 0) ? 0.22 : -0.22;
-      }
+      // Aerodynamic banking roll derived from horizontal velocity
+      // Moving left: negative roll; moving right (scrolling up): positive roll
+      const dx = targetBaseX - droneState.x;
+      const sweepBankRoll = prefersReduced ? 0 : clamp(dx * -0.18, -0.28, 0.28);
 
-      const fixedBobY = isFixedZone ? (Math.sin(time * 2.2) * 0.02) : 0;
-
-      // Banking roll when sweeping across in Project Section
-      const sweepBankRoll = (isProjectZone && projectXTarget < 1.9 && projectXTarget > -1.9) ? -0.28 : 0;
-
-      droneState.x = lerp(droneState.x, targetBaseX + cursorTrackingX + wanderX, 0.07);
-      droneState.y = lerp(droneState.y, targetBaseY + cursorTrackingY + wanderY + fixedBobY, 0.07);
-      droneState.z = lerp(droneState.z, waypoint.z, 0.07);
-      droneState.pitch = lerp(droneState.pitch, targetBasePitch + cursorPitchTilt, 0.07);
-      droneState.yaw = lerp(droneState.yaw, targetBaseYaw, 0.07);
+      droneState.x = lerp(droneState.x, targetBaseX + cursorTrackingX + wanderX, 0.08);
+      droneState.y = lerp(droneState.y, targetBaseY + cursorTrackingY + wanderY, 0.08);
+      droneState.z = lerp(droneState.z, targetBaseZ, 0.08);
+      droneState.pitch = lerp(droneState.pitch, targetBasePitch + cursorPitchTilt, 0.08);
+      droneState.yaw = lerp(droneState.yaw, targetBaseYaw, 0.08);
       droneState.roll = lerp(droneState.roll, cursorBankRoll + sweepBankRoll, 0.08);
 
       drone.position.set(droneState.x, droneState.y, droneState.z);
@@ -754,11 +723,15 @@ try {
 
     droneState.altitude = Number(waypoint.altitude.toFixed(1));
 
-    if (Math.random() < 0.2) {
-      let currentMode = "CURSOR TRACKING";
+    if (Math.random() < 0.1) {
+      let currentMode = "SCROLL LINKED";
       if (isMobileView) currentMode = "MOBILE STABLE HOVER";
-      else if (isTechStackZone) currentMode = "TECH STACK HOVER";
-      else if (isProjectZone) currentMode = (projectXTarget < 0) ? "PROJECT 02 (LEFT)" : "PROJECT 01 (RIGHT)";
+      else if (currentScrollProgress > 0.15 && currentScrollProgress < 0.35) currentMode = "TECH STACK HOVER";
+      else if (currentScrollProgress >= 0.35 && currentScrollProgress < 0.52) currentMode = "RESEARCH HOVER";
+      else if (currentScrollProgress >= 0.52 && currentScrollProgress < 0.68) currentMode = "PROJECT 01 (RIGHT)";
+      else if (currentScrollProgress >= 0.68 && currentScrollProgress < 0.82) currentMode = "PROJECT 02 (LEFT)";
+      else if (currentScrollProgress >= 0.82 && currentScrollProgress < 0.95) currentMode = "CREDENTIALS HOVER";
+      else if (currentScrollProgress >= 0.95) currentMode = "TERMINAL DOCK";
 
       window.dispatchEvent(
         new CustomEvent("drone:telemetry", {
